@@ -11,7 +11,6 @@ contract LastManStanding is ERC20, ERC20Burnable, Ownable {
     event additionaltoken(address indexed owner, uint256 amount,string message);
 
     address devWallet;
-    address jackpotWallet;
     address public stakingContractAdd;
     
 
@@ -21,7 +20,6 @@ contract LastManStanding is ERC20, ERC20Burnable, Ownable {
         _mint(msg.sender, 100000*10**decimals());
         emit tokensMinted(msg.sender, 100000*10**decimals(), "Initial supply");
         devWallet = 0xba8A0675651b9E84e164a4bB83a10D38855d1eb4;
-        jackpotWallet = 0x390162797Adc67B00564182737AF57774B4727e9;
     }
 
     function mint(address to, uint256 amount) public onlyOwner {
@@ -39,28 +37,27 @@ contract LastManStanding is ERC20, ERC20Burnable, Ownable {
         stakingContractAdd = _contractAdd;
     }
 
-    function transferFrom(address _from, address _to, uint _value) public virtual override returns (bool)
-    {
-        uint256 fee;
-        uint256 actual;
+    // function transferFrom(address _from, address _to, uint _value) public virtual override returns (bool)
+    // {
+    //     uint256 fee;
+    //     uint256 actual;
 
-        require(_to==stakingContractAdd);
-        fee = _value*5/100;
-        actual = _value*95/100;
-        _transfer(_from,jackpotWallet, fee);
-        _transfer(_from, _to, actual);
-        return true;
-    }
+    //     fee = _value*5/100;
+    //     actual = _value*95/100;
+    //     _transfer(_from,jackpotWallet, fee);
+    //     _transfer(_from, _to, actual);
+    //     return true;
+    // }
 
     function transfer(address _to, uint256 _value) public virtual override returns (bool){
         address owner = _msgSender();
         uint256 fee;
         uint256 actual;
 
-            fee = _value*2/100;
-            actual = _value*98/100;
-            _transfer(owner,devWallet, fee);
-            _transfer(owner, _to, actual);
+        fee = _value*2/100;
+        actual = _value*98/100;
+        _transfer(owner,devWallet, fee);
+        _transfer(owner, _to, actual);
 
         return true;
     }
