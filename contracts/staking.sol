@@ -20,10 +20,18 @@ contract LMSStaking {
     bool public timestampSet;
     uint256 public timePeriod;
     uint256 public jackpotAmount;
+
     bool public isStakingEnabled;
+    uint256 public minimumStakingAmount;
+
+    uint256 public apr;
+    uint256 public totalRewards;
+    uint256 public initialRewardTimeStamp;
 
     mapping(address => uint256) public alreadyWithdrawn;
     mapping(address => uint256) public balances;
+    mapping (address => uint256) public stakingReward;
+
 
     IERC20 public erc20Contract;
 
@@ -61,7 +69,7 @@ contract LMSStaking {
     }
 
     modifier jackpotTimePassed() {
-        require(block.timestamp >= jackpotTime, "Jacpot TIme has not been passed yet.");
+        require(block.timestamp >= jackpotTime, "Jacpot Time has not been passed yet.");
         _;
     }
 
@@ -71,17 +79,20 @@ contract LMSStaking {
         timePeriod = initialTimestamp.add(_timePeriodInSeconds);
     }
 
-    //Refactoring and Testing left for the function.
-    //Tested without staking actual tokens by changing state of the variable. 
-    function enableStaking(bool truefalse) public onlyOwner{
+    function enableStaking(bool truefalse) public onlyOwner {
         isStakingEnabled = truefalse;
+    }
+
+    function minStakingAmount(uint256 minAmount) public timestampIsSet onlyOwner {
+        require(isStakingEnabled==true, "Staking hasn't been enabled yet");
+        minimumStakingAmount = minAmount;
     }
 
     function stakeTokens(IERC20 token, uint256 amount) public timestampIsSet noReentrant {
         require(token == erc20Contract, "You are only allowed to stake the official erc20 token address which was passed into this contract's constructor");
         require(amount <= token.balanceOf(msg.sender), "Not enough LMS tokens in your wallet, please try lesser amount");
-        //check if this is working by staking actual tokens.
         require(isStakingEnabled==true, "Staking hasn't been enabled yet");
+        require(amount>=minimumStakingAmount, "Amount entered is less than minimum staking amount");
         
         uint256 fee = amount.mul(5).div(100);
         uint256 actual = amount.mul(95).div(100);
@@ -123,11 +134,44 @@ contract LMSStaking {
         require(token != erc20Contract, "Token address can not be ERC20 address which was passed into the constructor");
         token.safeTransfer(owner, amount);
     }
+
+    function setRewardTimestamp() public onlyOwner  {
+        initialRewardTimeStamp = block.timestamp;
+    }
+
+    function addRewards(IERC20 token, uint256 _amount) public onlyOwner noReentrant{
+        require(_amount > 0, "Amount must be greater than 0");
+        token.safeTransferFrom(msg.sender, address(this), _amount);
+        totalRewards = totalRewards.add(_amount);
+    }
+
+    function setAPR(uint256 _apr) public onlyOwner noReentrant{
+        require(_apr > 0, "APR must be greater than 0");
+        apr = _apr;
+    }
+
+    function caclulateRewards(address _address) public{
+        require(initialRewardTimeStamp > 0, "Please set the reward timestamp first");
+        require(block.timestamp > initialRewardTimeStamp.add(86400),"24hrs not passed yet");
+        initialRewardTimeStamp = block.timestamp;
+        stakingReward[_address] = balances[_address].mul(apr).div(365).div(100); 
+    }
+
+
+//PROBLEM : calling calculateRewards() function here would update the rewards only for the address passed in.
+//we cannot iterate though a mapping without storing the users in some kind of array and refrencing that when we want to iterate.
+// this will be a very expensive operation.
+
+    function withdrawStakingRewards() public {
+        
+    }
+
 }
 
 //TO DO -
 //STAKE time = 24hr
 //jackpot time = 24hr
-//testing of enable disable staking 
-//staking apr
-//minimum staking amount
+
+//staking apr  
+//keep track of money in total
+//add apr once a day in the mapping for all users
