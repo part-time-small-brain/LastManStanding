@@ -122,7 +122,7 @@ contract LMSStaking {
         require(isStakingEnabled==true, "Staking hasn't been enabled yet");
         require(amount>=minimumStakingAmount, "Amount entered is less than minimum staking amount");
         if(minimumStakingTime[msg.sender] != 0)
-         require(block.timestamp >= minimumStakingTime[msg.sender], "Minimum staking time has not passed yet" )
+         require(block.timestamp >= minimumStakingTime[msg.sender], "Minimum staking time has not passed yet" );
 
         
         uint256 fee = amount.mul(5).div(100);
