@@ -8,7 +8,7 @@ contract LMSStaking {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
     
-    address owner;
+    address immutable owner;
     bool internal locked;
     bool public isStakingEnabled;
     bool public isRewardEnabled;
@@ -25,7 +25,7 @@ contract LMSStaking {
     mapping(address => uint) public minimumStakingTime;
     mapping(address => uint256) public stakingReward;
 
-    IERC20 public erc20Contract;
+    IERC20 public immutable erc20Contract;
 
     /*
     * @dev Setting new owner and saving LMS contract address
@@ -62,7 +62,7 @@ contract LMSStaking {
     * @dev This function is used to enable staking
     * @param truefalse - true to enable staking, false to disable staking
     */
-    function enableStaking(bool truefalse) public onlyOwner {
+    function enableStaking(bool truefalse) external onlyOwner {
         isStakingEnabled = truefalse;
     }
 
@@ -70,7 +70,7 @@ contract LMSStaking {
     * @dev This function is used to set the minimum staking amount
     * @param minAmount - minimum amount to stake
     */
-    function minStakingAmount(uint256 minAmount) public onlyOwner {
+    function minStakingAmount(uint256 minAmount) external onlyOwner {
         minimumStakingAmount = minAmount;
     }
 
@@ -82,7 +82,7 @@ contract LMSStaking {
     * @param token - Address of LMS token
     * @param amount - Amount of LMS tokens
     */
-    function stakeTokens(IERC20 token, uint256 amount) public noReentrant {
+    function stakeTokens(IERC20 token, uint256 amount) external noReentrant {
         require(token == erc20Contract, "You are only allowed to stake LMS tokens");
         require(amount <= token.balanceOf(msg.sender), "Not enough LMS tokens in your wallet");
         require(isStakingEnabled == true, "Staking hasn't been enabled yet");
@@ -92,7 +92,7 @@ contract LMSStaking {
 
         uint256 fee = amount.mul(5).div(100);
         uint256 actual = amount.mul(95).div(100);
-        bool checkIfStakerExist = false;
+        bool checkIfStakerExist;
 
         balances[msg.sender] = balances[msg.sender].add(actual);
         jackpotAmount = jackpotAmount.add(fee);
@@ -119,7 +119,7 @@ contract LMSStaking {
     * @param token - Address of LMS token
     * @param amount - Amount of LMS tokens to be unstaked
     */
-    function unstakeTokens(IERC20 token, uint256 amount) public noReentrant {
+    function unstakeTokens(IERC20 token, uint256 amount) external noReentrant {
         require(balances[msg.sender] >= amount, "Insufficient token balance");
         require(token == erc20Contract, "Token parameter must be LMS token contract address which was passed into the constructor");
         require(block.timestamp >= minimumStakingTime[msg.sender], "Minimum staking time period has not been passed yet");
@@ -144,7 +144,7 @@ contract LMSStaking {
     * @param token - Address of LMS token
     * TODO : Call this function using a CRON job every 24hrs
     */
-    function jackpotWinner(IERC20 token) public noReentrant {
+    function jackpotWinner(IERC20 token) external noReentrant {
         require(block.timestamp >= jackpotTime, "24hrs have not passed since the last staker yet");
         require(token == erc20Contract, "Token parameter must be LMS token contract address which was passed into the constructor");
         require(jackpotAmount > 0, "Jackpot amount must be greater than 0");
@@ -160,7 +160,7 @@ contract LMSStaking {
     * @param amount - Amount of LMS tokens
     * @param truefalse - true to enable staking rewards, false to disable staking rewards
     */
-    function enableRewards(bool truefalse) public onlyOwner {
+    function enableRewards(bool truefalse) external onlyOwner {
         require(isStakingEnabled == true, "Staking hasn't been enabled yet");
         isRewardEnabled = truefalse;
     }
@@ -168,7 +168,7 @@ contract LMSStaking {
     /*
     * @dev Sets intial timestamp so that rewards can be calculated and added to reward balance only once in a day 
     */
-    function setRewardTimestamp() public onlyOwner {
+    function setRewardTimestamp() external onlyOwner {
         initialRewardTimeStamp = block.timestamp;
     }
     
@@ -176,7 +176,7 @@ contract LMSStaking {
     * @dev Sets the APR for reward tokens
     * @param _apr - Rate at which rewards are distributed
     */
-    function setAPR(uint256 _apr) public onlyOwner {
+    function setAPR(uint256 _apr) external onlyOwner {
         require(_apr > 0, "APR must be greater than 0");
         apr = _apr;
     }
@@ -186,7 +186,7 @@ contract LMSStaking {
     * @param token - Address of LMS token
     * @param _amount - Amount of LMS tokens to be transferred
     */
-    function addRewards(IERC20 token, uint256 _amount) public onlyOwner {
+    function addRewards(IERC20 token, uint256 _amount) external onlyOwner {
         require(_amount > 0, "Rewards must be more than 0");
         totalRewards = totalRewards.add(_amount);
         token.safeTransferFrom(msg.sender, address(this), _amount);
@@ -195,9 +195,8 @@ contract LMSStaking {
     /*
     * @dev Calculates and updates the amount of rewards for each user
     * TODO : Calling this twice in a day using CRON Jobs to calculate staking rewards of all users
-    * TODO : Disable rewards all together if after calling this function, the total reward balance in contract is less than the payout amount
     */
-    function caclulateRewards() public noReentrant {
+    function calculateRewards() external noReentrant {
         require(isRewardEnabled == true, "Staking Rewards haven't been enabled yet");
         require(initialRewardTimeStamp != 0, "Please set the staking reward timestamp first");
         require(block.timestamp > initialRewardTimeStamp.add(86400),"24hrs not passed yet since the last reward calculation");
@@ -212,7 +211,7 @@ contract LMSStaking {
     /*
     * @dev Compounds the rewards earned by the user, by removing it from rewards and adding it to the staked amount
     */
-    function compoundRewards() public noReentrant {
+    function compoundRewards() external noReentrant {
         require(isRewardEnabled == true, "Staking Rewards haven't been enabled yet");
         require(stakingReward[msg.sender] > 0,"Rewards must be greater than zero to compound");
         balances[msg.sender] = balances[msg.sender].add(stakingReward[msg.sender]);
@@ -223,7 +222,7 @@ contract LMSStaking {
     * @dev Withdraws the rewards to the function caller
     * @param token - Address of reward token
     */
-    function withdrawRewards(IERC20 token) public noReentrant {
+    function withdrawRewards(IERC20 token) external noReentrant {
         require(token == erc20Contract, "Token parameter must be LMS token contract address which was passed into the constructor");
         token.safeTransfer(msg.sender, stakingReward[msg.sender]);
         stakingReward[msg.sender] = 0;
@@ -234,14 +233,11 @@ contract LMSStaking {
     * @param token - Address of accidentally locked token
     * @param amount - amount of tokens to transfer
     */
-    function transferAccidentallyLockedTokens(IERC20 token, uint256 amount) public onlyOwner {
+    function transferAccidentallyLockedTokens(IERC20 token, uint256 amount) external onlyOwner {
         require(address(token) != address(0), "Token address can not be zero");
         require(token != erc20Contract, "Token address can not be ERC20 address which was passed into the constructor");
         token.safeTransfer(owner, amount);
     }
 }
 
-/*
-* TODO : Need to figure out events and emits for all the functions
-*/
 // 100000000000000000000000 = 100000 LMS
