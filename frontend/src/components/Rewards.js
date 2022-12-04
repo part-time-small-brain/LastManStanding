@@ -33,7 +33,7 @@ export default function Rewards() {
     }, {
         onSuccess(data) {
             setApr(parseInt(JSON.parse(data.amount)));
-            setTotalRewards(JSON.parse(data.totalRewards));
+            setTotalRewards(JSON.parse(data.totalRewards / 1e18));
         },
         onError(error) {
             console.log(error);
