@@ -1,4 +1,6 @@
 # LastManStanding
+**Docs** - [GitBook](https://lastmanstanding.gitbook.io/whitepaper/)
+
 Gamified Investing Platform
 
 The basic idea behind LastManStanding is to create an infinite buy pressure on the token LMS by using human greed and some psychological tricks. LastManStanding comprises of a token and a staking platform.  
