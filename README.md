@@ -9,7 +9,7 @@ Users incur a 2% fees when they buy the token which goes directly to the develop
 
 ![Screenshot_20221204_094703](https://user-images.githubusercontent.com/75518572/205475475-5479ff80-fe3b-4b38-addc-371362e72665.png)
 
-Dapp Link - [Lst Man Standing](https://github.com/part-time-small-brain/LastManStanding)  
+Dapp Link - [Lst Man Standing](https://lastmanstandingprotocol.vercel.app/)  
 Token Contract - [0xBEdcc2Bebc0D5b3509B6Eab78C3C5723C9110871](https://mumbai.polygonscan.com/address/0xBEdcc2Bebc0D5b3509B6Eab78C3C5723C9110871)  
 Staking Contract - [0x3E1Adb52e2bf936BD213E4B32b822Fc6137B0722](https://mumbai.polygonscan.com/address/0x3E1Adb52e2bf936BD213E4B32b822Fc6137B0722)  
 QuickSwap Pool - [LMS/USDC](https://legacy.quickswap.exchange/#/add/0xBEdcc2Bebc0D5b3509B6Eab78C3C5723C9110871/0xe11A86849d99F524cAC3E7A0Ec1241828e332C62)
