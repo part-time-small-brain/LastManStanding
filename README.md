@@ -15,7 +15,8 @@ Let's say the jackpot pool has been funded with 100,000 LMS. Alice has 1000 LMS 
 
 ![Screenshot_20221204_094703](https://user-images.githubusercontent.com/75518572/205475475-5479ff80-fe3b-4b38-addc-371362e72665.png)
 
-Dapp Link - [Last Man Standing](https://lastmanstandingprotocol.vercel.app/)  
-Token Contract - [0xBEdcc2Bebc0D5b3509B6Eab78C3C5723C9110871](https://mumbai.polygonscan.com/address/0xBEdcc2Bebc0D5b3509B6Eab78C3C5723C9110871)  
+Dapp Link - [Last Man Standing](https://lastmanstandingprotocol.vercel.app/)   
+Token Contract - [0xBEdcc2Bebc0D5b3509B6Eab78C3C5723C9110871](https://mumbai.polygonscan.com/address/0xBEdcc2Bebc0D5b3509B6Eab78C3C5723C9110871)   
+USDC Address - [0xe11A86849d99F524cAC3E7A0Ec1241828e332C62](https://mumbai.polygonscan.com/address/0xe11A86849d99F524cAC3E7A0Ec1241828e332C62)   
 Staking Contract - [0x3E1Adb52e2bf936BD213E4B32b822Fc6137B0722](https://mumbai.polygonscan.com/address/0x3E1Adb52e2bf936BD213E4B32b822Fc6137B0722)  
 QuickSwap Pool - [LMS/USDC](https://legacy.quickswap.exchange/#/add/0xBEdcc2Bebc0D5b3509B6Eab78C3C5723C9110871/0xe11A86849d99F524cAC3E7A0Ec1241828e332C62)
